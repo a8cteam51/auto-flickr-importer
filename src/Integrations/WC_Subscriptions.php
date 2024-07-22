@@ -1,6 +1,6 @@
 <?php
 
-namespace WPCOMSpecialProjects\Scaffold\Integrations;
+namespace WPCOMSpecialProjects\auto-flickr-importer\Integrations;
 
 defined( 'ABSPATH' ) || exit;
 

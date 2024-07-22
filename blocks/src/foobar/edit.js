@@ -32,7 +32,7 @@ import './editor.scss';
 export default function Edit() {
 	return (
 		<p { ...useBlockProps() }>
-			{ __( 'Todo List – hello from the editor!', 'wpcomsp-scaffold' ) }
+			{ __( 'Todo List – hello from the editor!', 'auto-flickr-importer' ) }
 		</p>
 	);
 }

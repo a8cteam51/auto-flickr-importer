@@ -1,9 +1,9 @@
 import { createHooks } from '@wordpress/hooks';
 import domReady from '@wordpress/dom-ready';
 
-window.wpcomsp_scaffold = window.wpcomsp_scaffold || {};
-window.wpcomsp_scaffold.hooks = createHooks();
+window.auto_flickr_importer = window.auto_flickr_importer || {};
+window.auto_flickr_importer.hooks = createHooks();
 
 domReady( () => {
-	window.wpcomsp_scaffold.hooks.doAction( 'editor.ready' );
+	window.auto_flickr_importer.hooks.doAction( 'editor.ready' );
 } );

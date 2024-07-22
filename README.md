@@ -1,4 +1,4 @@
-# EXAMPLE_REPO_NAME
+# auto-flickr-importer
 
 **Contributors:** wpcomspecialprojects
 **Tags:**
@@ -9,7 +9,7 @@
 **License:** GPLv3 or later
 **License URI:** http://www.gnu.org/licenses/gpl-3.0.html
 
-EXAMPLE_REPO_DESCRIPTION
+
 
 ## Description
 
@@ -28,7 +28,7 @@ This plugin requires WooCommerce 7.4+ to run. If you're running a lower version,
 ### INSTALL MANUALLY
 
 1. Download the plugin from https://wordpress.org/plugins/ and unzip the archive.
-1. Upload the `EXAMPLE_REPO_NAME` folder to the `/wp-content/plugins/` directory.
+1. Upload the `auto-flickr-importer` folder to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the `Plugins` menu in WordPress.
 
 ### AFTER ACTIVATION

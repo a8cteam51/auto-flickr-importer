@@ -2,8 +2,8 @@
 # This file is distributed under the GPL v3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Team51 Plugin Scaffold 1.0.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/team51-plugin-scaffold\n"
+"Project-Id-Version: auto-flickr-importer 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/auto-flickr-importer\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -12,26 +12,26 @@ msgstr ""
 "POT-Creation-Date: 2024-04-13T13:27:25+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
-"X-Domain: wpcomsp-scaffold\n"
+"X-Domain: auto-flickr-importer\n"
 
 #. Plugin Name of the plugin
-#: team51-plugin-scaffold.php
-msgid "Team51 Plugin Scaffold"
+#: auto-flickr-importer.php
+msgid "auto-flickr-importer"
 msgstr ""
 
 #. Plugin URI of the plugin
 #. Author URI of the plugin
-#: team51-plugin-scaffold.php
+#: auto-flickr-importer.php
 msgid "https://wpspecialprojects.wordpress.com"
 msgstr ""
 
 #. Description of the plugin
-#: team51-plugin-scaffold.php
-msgid "A scaffold for WP.com Special Projects plugins."
+#: auto-flickr-importer.php
+msgid ""
 msgstr ""
 
 #. Author of the plugin
-#: team51-plugin-scaffold.php
+#: auto-flickr-importer.php
 msgid "WordPress.com Special Projects"
 msgstr ""
 
@@ -45,8 +45,8 @@ msgstr ""
 msgid "<strong>%1$s (v%2$s)</strong> requires WooCommerce %3$s or newer. Please install, update, and/or activate WooCommerce!"
 msgstr ""
 
-#: team51-plugin-scaffold.php:57
-msgid "It seems like <strong>Team51 Plugin Scaffold</strong> is corrupted. Please reinstall!"
+#: auto-flickr-importer.php:57
+msgid "It seems like <strong>auto-flickr-importer</strong> is corrupted. Please reinstall!"
 msgstr ""
 
 #: blocks/build/foobar/index.js:1

@@ -1,6 +1,6 @@
 <?php
 /**
- * The Team51 Plugin Scaffold bootstrap file.
+ * The auto-flickr-importer bootstrap file.
  *
  * @since       1.0.0
  * @version     1.0.0
@@ -10,9 +10,9 @@
  * @noinspection    ALL
  *
  * @wordpress-plugin
- * Plugin Name:             Team51 Plugin Scaffold
+ * Plugin Name:             auto-flickr-importer
  * Plugin URI:              https://wpspecialprojects.wordpress.com
- * Description:             A scaffold for WP.com Special Projects plugins.
+ * Description:             
  * Version:                 1.0.0
  * Requires at least:       6.5
  * Tested up to:            6.5
@@ -21,7 +21,7 @@
  * Author URI:              https://wpspecialprojects.wordpress.com
  * License:                 GPL v3 or later
  * License URI:             https://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain:             wpcomsp-scaffold
+ * Text Domain:             auto-flickr-importer
  * Domain Path:             /languages
  * WC requires at least:    8.8
  * WC tested up to:         8.8
@@ -31,51 +31,51 @@ defined( 'ABSPATH' ) || exit;
 
 // Define plugin constants.
 function_exists( 'get_plugin_data' ) || require_once ABSPATH . 'wp-admin/includes/plugin.php';
-define( 'WPCOMSP_SCAFFOLD_METADATA', get_plugin_data( __FILE__, false, false ) );
+define( 'AUTO_FLICKR_IMPORTER_METADATA', get_plugin_data( __FILE__, false, false ) );
 
-define( 'WPCOMSP_SCAFFOLD_BASENAME', plugin_basename( __FILE__ ) );
-define( 'WPCOMSP_SCAFFOLD_PATH', plugin_dir_path( __FILE__ ) );
-define( 'WPCOMSP_SCAFFOLD_URL', plugin_dir_url( __FILE__ ) );
+define( 'AUTO_FLICKR_IMPORTER_BASENAME', plugin_basename( __FILE__ ) );
+define( 'AUTO_FLICKR_IMPORTER_PATH', plugin_dir_path( __FILE__ ) );
+define( 'AUTO_FLICKR_IMPORTER_URL', plugin_dir_url( __FILE__ ) );
 
 // Load plugin translations so they are available even for the error admin notices.
 add_action(
 	'init',
 	static function () {
 		load_plugin_textdomain(
-			WPCOMSP_SCAFFOLD_METADATA['TextDomain'],
+			AUTO_FLICKR_IMPORTER_METADATA['TextDomain'],
 			false,
-			dirname( WPCOMSP_SCAFFOLD_BASENAME ) . WPCOMSP_SCAFFOLD_METADATA['DomainPath']
+			dirname( AUTO_FLICKR_IMPORTER_BASENAME ) . AUTO_FLICKR_IMPORTER_METADATA['DomainPath']
 		);
 	}
 );
 
 // Load the autoloader.
-if ( ! is_file( WPCOMSP_SCAFFOLD_PATH . '/vendor/autoload.php' ) ) {
+if ( ! is_file( AUTO_FLICKR_IMPORTER_PATH . '/vendor/autoload.php' ) ) {
 	add_action(
 		'admin_notices',
 		static function () {
-			$message      = __( 'It seems like <strong>Team51 Plugin Scaffold</strong> is corrupted. Please reinstall!', 'wpcomsp-scaffold' );
-			$html_message = wp_sprintf( '<div class="error notice wpcomsp-scaffold-error">%s</div>', wpautop( $message ) );
+			$message      = __( 'It seems like <strong>auto-flickr-importer</strong> is corrupted. Please reinstall!', 'auto-flickr-importer' );
+			$html_message = wp_sprintf( '<div class="error notice auto-flickr-importer-error">%s</div>', wpautop( $message ) );
 			echo wp_kses_post( $html_message );
 		}
 	);
 	return;
 }
-require_once WPCOMSP_SCAFFOLD_PATH . '/vendor/autoload.php';
+require_once AUTO_FLICKR_IMPORTER_PATH . '/vendor/autoload.php';
 
 // Initialize the plugin if system requirements check out.
-$wpcomsp_scaffold_requirements = validate_plugin_requirements( WPCOMSP_SCAFFOLD_BASENAME );
-define( 'WPCOMSP_SCAFFOLD_REQUIREMENTS', $wpcomsp_scaffold_requirements );
+$auto_flickr_importer_requirements = validate_plugin_requirements( AUTO_FLICKR_IMPORTER_BASENAME );
+define( 'AUTO_FLICKR_IMPORTER_REQUIREMENTS', $auto_flickr_importer_requirements );
 
-if ( $wpcomsp_scaffold_requirements instanceof WP_Error ) {
+if ( $auto_flickr_importer_requirements instanceof WP_Error ) {
 	add_action(
 		'admin_notices',
-		static function () use ( $wpcomsp_scaffold_requirements ) {
-			$html_message = wp_sprintf( '<div class="error notice wpcomsp-scaffold-error">%s</div>', $wpcomsp_scaffold_requirements->get_error_message() );
+		static function () use ( $auto_flickr_importer_requirements ) {
+			$html_message = wp_sprintf( '<div class="error notice auto-flickr-importer-error">%s</div>', $auto_flickr_importer_requirements->get_error_message() );
 			echo wp_kses_post( $html_message );
 		}
 	);
 } else {
-	require_once WPCOMSP_SCAFFOLD_PATH . 'functions.php';
-	add_action( 'plugins_loaded', array( wpcomsp_scaffold_get_plugin_instance(), 'maybe_initialize' ) );
+	require_once AUTO_FLICKR_IMPORTER_PATH . 'functions.php';
+	add_action( 'plugins_loaded', array( auto_flickr_importer_get_plugin_instance(), 'maybe_initialize' ) );
 }
