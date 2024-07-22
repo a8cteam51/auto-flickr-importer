@@ -1,8 +1,6 @@
 <?php
 
-namespace WPCOMSpecialProjects\auto-flickr-importer;
-
-use WPCOMSpecialProjects\auto-flickr-importer\Integrations\WC_Subscriptions;
+namespace WPCOMSpecialProjects\AutoFlickrImporter;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -14,16 +12,6 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Integrations {
 	// region FIELDS AND CONSTANTS
-
-	/**
-	 * The WooCommerce Subscriptions integration instance.
-	 *
-	 * @since   1.0.0
-	 * @version 1.0.0
-	 *
-	 * @var     WC_Subscriptions|null
-	 */
-	public ?WC_Subscriptions $wc_subscriptions = null;
 
 	// endregion
 
@@ -38,8 +26,6 @@ final class Integrations {
 	 * @return  void
 	 */
 	public function initialize(): void {
-		$this->wc_subscriptions = new WC_Subscriptions();
-		$this->wc_subscriptions->maybe_initialize();
 	}
 
 	// endregion

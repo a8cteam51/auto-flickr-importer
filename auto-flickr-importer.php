@@ -1,6 +1,6 @@
 <?php
 /**
- * The auto-flickr-importer bootstrap file.
+ * The Auto Flickr Importer bootstrap file.
  *
  * @since       1.0.0
  * @version     1.0.0
@@ -10,9 +10,9 @@
  * @noinspection    ALL
  *
  * @wordpress-plugin
- * Plugin Name:             auto-flickr-importer
+ * Plugin Name:             Auto Flickr Importer
  * Plugin URI:              https://wpspecialprojects.wordpress.com
- * Description:             
+ * Description:
  * Version:                 1.0.0
  * Requires at least:       6.5
  * Tested up to:            6.5
@@ -77,5 +77,5 @@ if ( $auto_flickr_importer_requirements instanceof WP_Error ) {
 	);
 } else {
 	require_once AUTO_FLICKR_IMPORTER_PATH . 'functions.php';
-	add_action( 'plugins_loaded', array( auto_flickr_importer_get_plugin_instance(), 'maybe_initialize' ) );
+	add_action( 'plugins_loaded', array( auto_flickr_importer_get_plugin_instance(), 'initialize' ) );
 }

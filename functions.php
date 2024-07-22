@@ -2,7 +2,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-use WPCOMSpecialProjects\auto-flickr-importer\Plugin;
+use WPCOMSpecialProjects\AutoFlickrImporter\Plugin;
 
 // region
 

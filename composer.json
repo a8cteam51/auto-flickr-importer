@@ -32,21 +32,15 @@
   },
   "require-dev": {
     "a8cteam51/team51-configs": "dev-trunk",
-
-    "johnpbloch/wordpress-core": "6.5.*",
-    "wpackagist-plugin/woocommerce": "8.8.*",
-
     "wp-cli/i18n-command": "^2.6",
-
     "wp-coding-standards/wpcs": "^3",
     "phpcompatibility/phpcompatibility-wp": "*",
-
     "roave/security-advisories": "dev-latest"
   },
 
   "autoload": {
     "psr-4": {
-      "WPCOMSpecialProjects\\auto-flickr-importer\\": "src/"
+      "WPCOMSpecialProjects\\AutoFlickrImporter\\": "src/"
     },
     "classmap": [
       "models/"

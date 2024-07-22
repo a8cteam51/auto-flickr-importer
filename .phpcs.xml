@@ -20,7 +20,7 @@
 			<property name="prefixes" type="array">
 				<element value="wpcomsp_"/>
 				<element value="auto_flickr_importer_"/>
-				<element value="WPCOMSpecialProjects\auto-flickr-importer"/>
+				<element value="WPCOMSpecialProjects\AutoFlickrImporter"/>
 			</property>
 		</properties>
 	</rule>
