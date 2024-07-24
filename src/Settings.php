@@ -178,7 +178,7 @@ final class Settings {
 				if ( $this->flickr_oauth->token_exist() ) {
 					submit_button( 'Re-Authorize Flickr', 'secondary', 'flickr_oauth_request', false );
 					echo '<p>' . esc_html__( 'Flickr Account Authorized.', 'auto-flickr-importer' ) . '</p>';
-				} elseif ( credentials_exist() ) {
+				} elseif ( wpcomsp_auto_flickr_importer_credentials_exist() ) {
 					submit_button( 'Authorize Flickr', 'secondary', 'flickr_oauth_request', false );
 					echo '<p>' . esc_html__( 'Authorize your Flickr account to enable auto import.', 'auto-flickr-importer' ) . '</p>';
 				} else {

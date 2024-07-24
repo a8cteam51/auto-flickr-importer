@@ -36,5 +36,8 @@ function auto_flickr_importer_get_plugin_slug(): string {
 
 require AUTO_FLICKR_IMPORTER_PATH . 'includes/assets.php';
 require AUTO_FLICKR_IMPORTER_PATH . 'includes/settings.php';
+require AUTO_FLICKR_IMPORTER_PATH . 'includes/flickr-helpers.php';
+require AUTO_FLICKR_IMPORTER_PATH . 'includes/helpers.php';
+require AUTO_FLICKR_IMPORTER_PATH . 'includes/hooks.php';
 
 // endregion
