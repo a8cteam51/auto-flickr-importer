@@ -13,16 +13,6 @@ defined( 'ABSPATH' ) || exit;
 class Plugin {
 	// region FIELDS AND CONSTANTS
 
-	/**
-	 * The integrations component.
-	 *
-	 * @since   1.0.0
-	 * @version 1.0.0
-	 *
-	 * @var     Integrations|null
-	 */
-	public ?Integrations $integrations = null;
-
 	// endregion
 
 	// region MAGIC METHODS
@@ -92,8 +82,11 @@ class Plugin {
 	 * @return  void
 	 */
 	public function initialize(): void {
-		$this->integrations = new Integrations();
-		$this->integrations->initialize();
+		$settings = new Settings();
+		$settings->initialize();
+
+		$import_automator = new Import_Automator();
+		$import_automator->initialize();
 	}
 
 	// endregion
