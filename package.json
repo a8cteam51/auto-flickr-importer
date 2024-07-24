@@ -1,7 +1,7 @@
 {
   "name": "auto-flickr-importer",
   "version": "1.0.0",
-  "description": "A scaffold for WP.com Special Projects plugins",
+  "description": "Package for the Auto Flickr Importer plugin.",
   "author": {
     "name": "WordPress.com Special Projects Team",
     "url": "https://wpspecialprojects.wordpress.com"
