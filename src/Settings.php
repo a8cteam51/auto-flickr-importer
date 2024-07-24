@@ -173,20 +173,6 @@ final class Settings {
 				submit_button();
 				?>
 			</form>
-			<form method="post" action="<?php echo esc_url( admin_url( 'options-general.php?page=wpcomsp_auto_flickr_importer-settings&action=flickr_oauth_request' ) ); ?>">
-				<?php
-				if ( $this->flickr_oauth->token_exist() ) {
-					submit_button( 'Re-Authorize Flickr', 'secondary', 'flickr_oauth_request', false );
-					echo '<p>' . esc_html__( 'Flickr Account Authorized.', 'auto-flickr-importer' ) . '</p>';
-				} elseif ( wpcomsp_auto_flickr_importer_credentials_exist() ) {
-					submit_button( 'Authorize Flickr', 'secondary', 'flickr_oauth_request', false );
-					echo '<p>' . esc_html__( 'Authorize your Flickr account to enable auto import.', 'auto-flickr-importer' ) . '</p>';
-				} else {
-					submit_button( 'Authorize Flickr', 'secondary', 'flickr_oauth_request', false, array( 'disabled' => true ) );
-					echo '<p>' . esc_html__( 'Please enter your Flickr API Key and Secret before authorizing.', 'auto-flickr-importer' ) . '</p>';
-				}
-				?>
-			</form>
 		</div>
 		<?php
 	}
