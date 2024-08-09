@@ -7,6 +7,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Returns a Flickr user object, given their username.
  *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
  * @param   string $username The username of the user to lookup.
  *
  * @link    https://www.flickr.com/services/api/flickr.people.findByUsername.html
@@ -21,6 +24,9 @@ function wpcomsp_auto_flickr_importer_get_flickr_user_by_username( string $usern
 /**
  * Returns the photosets belonging to the specified user.
  *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
  * @param   string $user_id The NSID of the user to get a photoset list for.
  *
  * @link    https://www.flickr.com/services/api/flickr.photosets.getList.html
@@ -34,6 +40,9 @@ function wpcomsp_auto_flickr_importer_get_flickr_photosets_for_user( string $use
 
 /**
  * Returns the list of photos in a set.
+ *
+ * @since 1.0.0
+ * @version 1.0.0
  *
  * @param   string $photoset_id The ID of the photoset to return the photos for.
  * @param   array  $arguments   Additional arguments to pass to the API call.
@@ -50,6 +59,9 @@ function wpcomsp_auto_flickr_importer_get_flickr_photos_for_photoset( string $ph
 /**
  * Returns photos from the given user's photostream. Only photos visible to the calling user will be returned.
  *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
  * @param   string $user_id   The NSID of the user whose photos to return. A value of "me" will return the calling user's photos.
  * @param   array  $arguments Additional arguments to pass to the API call.
  *
@@ -65,6 +77,9 @@ function wpcomsp_auto_flickr_importer_get_flickr_photos_for_user( string $user_i
 /**
  * Returns the available sizes for a photo. The calling user must have permission to view the photo.
  *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
  * @param   string $photo_id The ID of the photo to return the sizes for.
  *
  * @link    https://www.flickr.com/services/api/flickr.photos.getSizes.html
@@ -78,6 +93,9 @@ function wpcomsp_auto_flickr_importer_get_flickr_photo_sizes( string $photo_id )
 
 /**
  * Returns the comments for a photo.
+ *
+ * @since 1.0.0
+ * @version 1.0.0
  *
  * @param   string $photo_id  The ID of the photo to return the comments for.
  * @param   array  $arguments Additional arguments to pass to the API call.
@@ -93,6 +111,9 @@ function wpcomsp_auto_flickr_importer_get_flickr_comments_for_photo( string $pho
 
 /**
  * Returns recent comments for a Flickr user.
+ *
+ * @since 1.0.0
+ * @version 1.0.0
  *
  * @param string $user_nsid The NSID of the user to get recent comments for.
  *

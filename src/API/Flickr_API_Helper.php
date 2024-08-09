@@ -6,12 +6,18 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Performs the calls to the Flickr API and parses the responses.
+ *
+ * @since 1.0.0
+ * @version 1.0.0
  */
 final class Flickr_API_Helper {
 	// region FIELDS AND CONSTANTS
 
 	/**
 	 * The base URL for the Flickr API.
+	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
 	 *
 	 * @link    https://www.flickr.com/services/api/request.rest.html
 	 */
@@ -23,6 +29,9 @@ final class Flickr_API_Helper {
 
 	/**
 	 * Calls a given endpoint on the Flickr API and returns the response.
+	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
 	 *
 	 * @param   string $endpoint  The endpoint to call.
 	 * @param   array  $arguments The arguments to send with the request.
@@ -71,6 +80,9 @@ final class Flickr_API_Helper {
 
 	/**
 	 * Prepares the fully qualified request URL for the given endpoint.
+	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
 	 *
 	 * @param   string $endpoint  The endpoint to call.
 	 * @param   array  $arguments The arguments to send with the request.

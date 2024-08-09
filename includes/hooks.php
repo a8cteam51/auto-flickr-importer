@@ -3,6 +3,9 @@
 /**
  * Filters the comment author URL to link to the Flickr user profile.
  *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
  * @param string             $comment_author_url The comment author URL.
  * @param integer|WP_Comment $comment_id         The comment ID.
  *
