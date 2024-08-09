@@ -14,27 +14,28 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Settings {
 
-	protected Flickr_OAuth $flickr_oauth;
-
 	/**
 	 * Initializes the settings page.
 	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
+	 *
 	 * @return void
 	 */
-	public function initialize() {
+	public function initialize(): void {
 		add_action( 'admin_menu', array( $this, 'add_settings_page' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-
-		$this->flickr_oauth = new Flickr_OAuth();
-		$this->flickr_oauth->handle_oauth();
 	}
 
 	/**
 	 * Adds the settings page under the Settings menu.
 	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
+	 *
 	 * @return void
 	 */
-	public function add_settings_page() {
+	public function add_settings_page(): void {
 		add_options_page(
 			__( 'Flickr Auto Importer', 'auto-flickr-importer' ),
 			__( 'Flickr Auto Importer', 'auto-flickr-importer' ),
@@ -47,9 +48,12 @@ final class Settings {
 	/**
 	 * Registers the settings.
 	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
+	 *
 	 * @return void
 	 */
-	public function register_settings() {
+	public function register_settings(): void {
 		$this->register_setting_section_credentials();
 		$this->register_setting_section_importer();
 	}
@@ -57,9 +61,12 @@ final class Settings {
 	/**
 	 * Registers the setting section credentials.
 	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
+	 *
 	 * @return void
 	 */
-	public function register_setting_section_credentials() {
+	public function register_setting_section_credentials(): void {
 		register_setting( 'wpcomsp_auto_flickr_importer_settings_group', 'wpcomsp_auto_flickr_importer_api_key' );
 		register_setting( 'wpcomsp_auto_flickr_importer_settings_group', 'wpcomsp_auto_flickr_importer_api_secret' );
 
@@ -92,9 +99,12 @@ final class Settings {
 	/**
 	 * Registers the setting section importer.
 	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
+	 *
 	 * @return void
 	 */
-	public function register_setting_section_importer() {
+	public function register_setting_section_importer(): void {
 		register_setting( 'wpcomsp_auto_flickr_importer_settings_group', 'wpcomsp_auto_flickr_importer_site_author_username' );
 		register_setting( 'wpcomsp_auto_flickr_importer_settings_group', 'wpcomsp_auto_flickr_importer_username' );
 
@@ -130,13 +140,26 @@ final class Settings {
 	/**
 	 * Displays the text field.
 	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
+	 *
 	 * @param array $args The field arguments.
 	 *
 	 * @return void
 	 */
 	public function text_field_callback( array $args ): void {
 		$field = wpcomsp_auto_flickr_importer_get_raw_setting( $args['field'], '' );
-		echo wp_kses_post( sprintf( '<input type="text" id="wpcomsp_auto_flickr_importer_%s" name="wpcomsp_auto_flickr_importer_%s" value="%s" />', $args['field'], $args['field'], esc_attr( $field ) ) );
+		echo wp_kses(
+			sprintf( '<input type="text" id="wpcomsp_auto_flickr_importer_%s" name="wpcomsp_auto_flickr_importer_%s" value="%s" />', $args['field'], $args['field'], esc_attr( $field ) ),
+			array(
+				'input' => array(
+					'type'  => array(),
+					'id'    => array(),
+					'name'  => array(),
+					'value' => array(),
+				),
+			)
+		);
 		if ( ! empty( $args['description'] ) ) {
 			echo wp_kses_post( sprintf( '<p class="description">%s</p>', $args['description'] ) );
 		}
@@ -145,20 +168,79 @@ final class Settings {
 	/**
 	 * Displays the password field.
 	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
+	 *
 	 * @param array $args The field arguments.
 	 *
 	 * @return void
 	 */
 	public function password_field_callback( array $args ): void {
 		$field = wpcomsp_auto_flickr_importer_get_raw_setting( $args['field'], '' );
-		echo wp_kses_post( sprintf( '<input type="password" id="wpcomsp_auto_flickr_importer_%s" name="wpcomsp_auto_flickr_importer_%s" value="%s" />', $args['field'], $args['field'], esc_attr( $field ) ) );
+		echo wp_kses(
+			sprintf( '<input type="password" id="wpcomsp_auto_flickr_importer_%s" name="wpcomsp_auto_flickr_importer_%s" value="%s" />', $args['field'], $args['field'], esc_attr( $field ) ),
+			array(
+				'input' => array(
+					'type'  => array(),
+					'id'    => array(),
+					'name'  => array(),
+					'value' => array(),
+				),
+			)
+		);
 		if ( ! empty( $args['description'] ) ) {
 			echo wp_kses_post( sprintf( '<p class="description">%s</p>', $args['description'] ) );
 		}
 	}
 
 	/**
+	 * Renders the initial import action.
+	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
+	 *
+	 * @return void
+	 */
+	private function render_initial_import_action(): void {
+
+		$attributes = array();
+		if ( ! wpcomsp_auto_flickr_importer_credentials_exist() ) {
+			$attributes['disabled'] = true;
+			submit_button( 'Run Initial Flickr Import', 'secondary', 'flickr_initial_import', false, $attributes );
+			echo '<p>' . esc_html__( 'Please enter your Flickr API Key, Secret and Importer data before you can run the initial import.', 'auto-flickr-importer' ) . '</p>';
+			return;
+		}
+
+		if ( ! empty( wpcomsp_auto_flickr_importer_get_raw_setting( 'initial_import_running' ) ) ) {
+			$attributes['disabled'] = true;
+			submit_button( 'Initial Flickr Import Running', 'secondary', 'flickr_initial_import', false, $attributes );
+			echo '<p>' . esc_html__( 'The initial import is running you will get an email when it\'s finished.', 'auto-flickr-importer' ) . '</p>';
+			return;
+		}
+
+		if ( ! empty( wpcomsp_auto_flickr_importer_get_raw_setting( 'initial_import_finished' ) ) ) {
+			$action  = '<input type="hidden" name="action" value="re-run_initial_import">';
+			$action .= wp_nonce_field( 'initial_import_action' );
+			$action .= '<h3>' . esc_html__( 'Initial Import finished', 'auto-flickr-importer' ) . '</h3>';
+			$action .= '<p>' . esc_html__( 'The initial import is finished. Flickr data is periodically auto updated.', 'auto-flickr-importer' ) . '</p>';
+			$action .= get_submit_button( 'Re-run Flickr Initial Import', 'secondary', 'flickr_initial_import', false, $attributes );
+			$action .= '<p><span style="color: red">' . esc_html__( 'Warning: ', 'auto-flickr-importer' ) . '</span>' . esc_html__( 'Re-running the import will try to import all of the Flickr data again.', 'auto-flickr-importer' ) . '</p>';
+			echo $action; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			return;
+		}
+
+		$action  = '<input type="hidden" name="action" value="run_initial_import">';
+		$action .= wp_nonce_field( 'initial_import_action' );
+		$action .= get_submit_button( 'Run Flickr Import', 'secondary', 'flickr_initial_import', false );
+		$action .= '<p>' . esc_html__( 'Run the initial Flickr import. After the initial import is finished the data will be periodically updated. The import could take a few hours depending on the number of images.', 'auto-flickr-importer' ) . '</p>';
+		echo $action; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
 	 * Displays the settings page content.
+	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
 	 *
 	 * @return void
 	 */
@@ -172,6 +254,11 @@ final class Settings {
 				do_settings_sections( 'wpcomsp_auto_flickr_importer-settings' );
 				submit_button();
 				?>
+			</form>
+			<form method="post" action="<?php echo esc_url( admin_url( 'options-general.php?page=wpcomsp_auto_flickr_importer-settings' ) ); ?>">
+			<?php
+			$this->render_initial_import_action();
+			?>
 			</form>
 		</div>
 		<?php
