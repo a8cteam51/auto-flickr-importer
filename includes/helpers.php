@@ -5,13 +5,18 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Check if the credentials exist.
  *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
  * @return boolean
  */
 function wpcomsp_auto_flickr_importer_credentials_exist(): bool {
-	$api_key    = wpcomsp_auto_flickr_importer_get_raw_setting( 'api_key', '' );
-	$api_secret = wpcomsp_auto_flickr_importer_get_raw_setting( 'api_secret', '' );
+	$api_key              = wpcomsp_auto_flickr_importer_get_raw_setting( 'api_key', '' );
+	$api_secret           = wpcomsp_auto_flickr_importer_get_raw_setting( 'api_secret', '' );
+	$flickr_username      = wpcomsp_auto_flickr_importer_get_raw_setting( 'username', '' );
+	$site_author_username = wpcomsp_auto_flickr_importer_get_raw_setting( 'site_author_username', '' );
 
-	if ( empty( $api_key ) || empty( $api_secret ) ) {
+	if ( empty( $api_key ) || empty( $api_secret ) || empty( $flickr_username ) || empty( $site_author_username ) ) {
 		return false;
 	}
 
@@ -20,6 +25,9 @@ function wpcomsp_auto_flickr_importer_credentials_exist(): bool {
 
 /**
  * Get post for Flickr media ID.
+ *
+ * @since 1.0.0
+ * @version 1.0.0
  *
  * @param string $media_id The Flickr media ID.
  *
@@ -39,6 +47,9 @@ function wpcomsp_auto_flickr_importer_get_post_for_media_id( string $media_id ):
 
 /**
  * Create a post for the Flickr media.
+ *
+ * @since 1.0.0
+ * @version 1.0.0
  *
  * @param string $user_nsid       The Flickr user NSID.
  * @param array  $media           The Flickr media.
@@ -77,6 +88,9 @@ function wpcomsp_auto_flickr_importer_create_post_for_media( string $user_nsid, 
 
 /**
  * Replace Flickr links with WordPress links.
+ *
+ * @since 1.0.0
+ * @version 1.0.0
  *
  * @param string $user_nsid       The Flickr user NSID.
  * @param string $content         The content.
@@ -117,6 +131,9 @@ function wpcomsp_auto_flickr_importer_replace_flickr_links( string $user_nsid, s
 /**
  * Upload Flickr media from server.
  *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
  * @param array   $media   The Flickr media.
  * @param integer $post_id The post ID.
  *
@@ -152,8 +169,9 @@ function wpcomsp_auto_flickr_importer_upload_media_from_server( array $media, in
 		),
 		gmdate( 'Y/m', $media['dateupload'] )
 	);
+
 	if ( ! empty( $sideload['error'] ) ) {
-		return new WP_Error( '', $sideload['error'] );
+		return new WP_Error( '400', $sideload['error'] . ' | Media: ' . wp_json_encode( $media ) . ' | Post ID: ' . $post_id );
 	}
 
 	// Create attachment post.
@@ -171,7 +189,7 @@ function wpcomsp_auto_flickr_importer_upload_media_from_server( array $media, in
 	);
 	if ( is_wp_error( $attachment_id ) || ! $attachment_id ) {
 		if ( ! is_wp_error( $attachment_id ) ) {
-			$attachment_id = new WP_Error( '', "ERROR CREATING ATTACHMENT FOR {$media['id']}" );
+			$attachment_id = new WP_Error( '400', "ERROR CREATING ATTACHMENT FOR {$media['id']}" );
 		}
 
 		return $attachment_id;
@@ -192,6 +210,9 @@ function wpcomsp_auto_flickr_importer_upload_media_from_server( array $media, in
 /**
  * Replace Flickr comment photos.
  *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
  * @param string $content The content.
  *
  * @return string
@@ -210,20 +231,161 @@ function wpcomsp_auto_flickr_importer_replace_flickr_comment_photos( string $con
 }
 
 /**
+ * Insert a comment if it does not exist.
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
+ * @param string $user_nsid The Flickr user NSID.
+ * @param string $media_id  The media ID.
+ * @param array  $comment   Comment data.
+ *
+ * @return boolean
+ */
+function wpcomsp_insert_comment_if_not_exists( string $user_nsid, string $media_id, array $comment ): bool {
+	$post = wpcomsp_auto_flickr_importer_get_post_for_media_id( $media_id );
+
+	if ( empty( $post ) ) {
+		return false;
+	}
+
+	$post_id = $post->ID;
+
+	if ( comment_exists( $comment['authorname'], gmdate( 'Y-m-d H:i:s', $comment['datecreate'] ) ) ) {
+		return false;
+	}
+
+	$result = wp_insert_comment(
+		array(
+			'comment_date'    => gmdate( 'Y-m-d H:i:s', $comment['datecreate'] ),
+			'comment_content' => $comment['_content'],
+			'comment_author'  => $comment['authorname'],
+			'user_id'         => $user_nsid === $comment['author'] ? $user_nsid : 0,
+			'comment_post_ID' => $post_id,
+			'comment_meta'    => array(
+				'_flickr_comment_id'      => $comment['id'],
+				'_flickr_author_nsid'     => $comment['author'],
+				'_flickr_author_realname' => $comment['realname'],
+			),
+		)
+	);
+
+	return ! empty( $result );
+}
+
+/**
+ * Gets data from a remote file.
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
+ * @param string $file_url The file URL.
+ *
+ * @return string|null
+ */
+function wpcomsp_auto_flickr_importer_get_remote_file( string $file_url ): ?string {
+
+	$response = wp_remote_get( $file_url );
+
+	// Check for errors
+	if ( is_wp_error( $response ) ) {
+		// Handle the error
+		$error_message = $response->get_error_message();
+		wpcomsp_auto_flickr_importer_write_log( 'Unable to fetch the file: ' . $file_url . ' | Error: ' . $error_message );
+
+		return null;
+	}
+
+	// Retrieve the body of the response
+	$body = wp_remote_retrieve_body( $response );
+
+	if ( empty( $body ) ) {
+		wpcomsp_auto_flickr_importer_write_log( 'The file is empty or could not be read: ' . $file_url . ' | Error: ' . wp_json_encode( $response ) );
+		return null;
+	}
+
+	return $body;
+}
+
+/**
+ * Gets data from a local file.
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
+ * @param string $file_url The file URL.
+ *
+ * @return array|null
+ */
+function wpcomsp_auto_flickr_importer_get_local_file( string $file_url ): ?array {
+
+	global $wp_filesystem;
+
+	if ( ! function_exists( 'WP_Filesystem' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+	}
+
+	WP_Filesystem();
+
+	$file_contents = $wp_filesystem->get_contents( $file_url );
+
+	if ( false === $file_contents ) {
+		wpcomsp_auto_flickr_importer_write_log( 'Unable to fetch the file: ' . $file_url );
+		return null;
+	}
+
+	$file_contents_decoded = json_decode( $file_contents, true );
+
+	if ( json_last_error() !== JSON_ERROR_NONE ) {
+		wpcomsp_auto_flickr_importer_write_log( 'Failed to decode JSON. ' . json_last_error_msg() );
+
+		return null;
+	}
+
+	return $file_contents_decoded;
+}
+
+/**
  * Custom error log.
  *
- * @param string $log The log.
+ * @since 1.0.0
+ * @version 1.0.0
+ *
+ * @param string|array|object $log The log.
  *
  * @return void
  */
-function wpcomsp_auto_flickr_importer_write_log( string $log ): void {
-	if ( true === WP_DEBUG ) {
-		if ( is_array( $log ) || is_object( $log ) ) {
-			// phpcs:ignore
-			error_log( print_r( $log, true ) );
-		} else {
-			// phpcs:ignore
-			error_log( $log );
-		}
+function wpcomsp_auto_flickr_importer_write_log( string|array|object $log ): void {
+	if ( is_array( $log ) || is_object( $log ) ) {
+		// phpcs:ignore
+		error_log( 'Flickr Importer: ' . print_r( $log, true ) );
+	} else {
+		// phpcs:ignore
+		error_log( 'Flickr Importer: ' . $log );
 	}
+}
+
+/**
+ * Initializes the WP_Filesystem API and returns the file system object.
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ *
+ * @return WP_Filesystem_Base|false The WP_Filesystem object on success, false on failure.
+ */
+function wpcomsp_auto_flickr_importer_initialize_wp_filesystem(): WP_Filesystem_Base|false {
+	global $wp_filesystem;
+
+	// Load the required file for WP_Filesystem if not already loaded
+	if ( ! function_exists( 'WP_Filesystem' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+	}
+
+	// Initialize the WP_Filesystem
+	if ( WP_Filesystem() ) {
+		return $wp_filesystem;
+	}
+
+	// If initialization fails, return false
+	return false;
 }
