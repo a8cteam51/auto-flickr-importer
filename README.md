@@ -13,6 +13,8 @@
 
 Imports Flickr photos, videos, albums and comments into your WordPress site.
 
+The Flickr API has a rate limit of 3600 API request per hour or 1 per second. Rate limit handling is implemented in the plugin to avoid exceeding the rate limit.
+
 ## REQUIREMENTS
 
 You need to create an application on Flickr to get the API key and secret. You can create an application on Flickr by visiting the following URL: https://www.flickr.com/services/apps/create/apply/
