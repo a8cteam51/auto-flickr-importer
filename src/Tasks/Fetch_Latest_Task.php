@@ -36,7 +36,10 @@ class Fetch_Latest_Task extends Abstract_Background_Task {
 
 		$latest_import_time = wpcomsp_auto_flickr_importer_get_raw_setting( 'latest_import_time' );
 
-		if ( null === $latest_import_time ) {
+		// Don't run if comment delta is running because of Flickr API rate limits.
+		$comment_delta_running = wpcomsp_auto_flickr_importer_get_raw_setting( 'comment_delta_running' );
+
+		if ( null === $latest_import_time || $comment_delta_running ) {
 			return array();
 		}
 

@@ -3,6 +3,7 @@
 namespace WPCOMSpecialProjects\AutoFlickrImporter\Tasks;
 
 use WPCOMSpecialProjects\AutoFlickrImporter\Importers\Comment_Delta_Importer;
+use WPCOMSpecialProjects\AutoFlickrImporter\Importers\Photo_Stream_Importer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -34,6 +35,8 @@ class Fetch_Comment_Delta_Task extends Abstract_Background_Task {
 	 */
 	#[\Override] public function generate_queue( array $queue, array $start_args, string $run_id ): array {
 
+		wpcomsp_auto_flickr_importer_update_raw_setting( 'comment_delta_running', true );
+
 		$queue[] = array(
 			'page' => 1,
 		);
@@ -53,6 +56,14 @@ class Fetch_Comment_Delta_Task extends Abstract_Background_Task {
 		if ( $next_args ) { // Queue up next page.
 			auto_flickr_importer_enqueue_front_into_background_task_queue( $this::get_task_name(), $run_id, $next_args );
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	#[\Override] public function cleanup( string $run_id ): void {
+
+		wpcomsp_auto_flickr_importer_update_raw_setting( 'comment_delta_running', false );
 	}
 
 	// endregion

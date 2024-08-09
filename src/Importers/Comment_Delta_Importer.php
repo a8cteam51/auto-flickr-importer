@@ -73,7 +73,7 @@ class Comment_Delta_Importer {
 				}
 			}
 
-			sleep( 0.5 ); // Sleep for half a second to avoid rate limiting
+			sleep( 1 ); // Sleep for a second to avoid rate limiting
 		}
 
 		if ( $page < $total_pages ) {
