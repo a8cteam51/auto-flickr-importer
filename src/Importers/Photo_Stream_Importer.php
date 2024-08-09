@@ -241,7 +241,7 @@ class Photo_Stream_Importer {
 			$args['min_upload_date'] = $this->latest_timestamp;
 		}
 
-		wpcomsp_auto_flickr_importer_update_raw_setting( 'latest_import_time', time() );
+		wpcomsp_auto_flickr_importer_update_raw_setting( 'running_latest_import_time', time() );
 
 		$photos = wpcomsp_auto_flickr_importer_get_flickr_photos_for_user(
 			$this->flickr_user_id,
@@ -516,6 +516,9 @@ class Photo_Stream_Importer {
 		$total_pages = ceil( count( $photos ) / $this->per_page );
 
 		if ( $page > $total_pages && $videos_imported ) {
+			$running_latest_import_time = wpcomsp_auto_flickr_importer_get_raw_setting( 'running_latest_import_time' );
+			wpcomsp_auto_flickr_importer_update_raw_setting( 'latest_import_time', $running_latest_import_time );
+
 			return null;
 		}
 
