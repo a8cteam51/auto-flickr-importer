@@ -11,6 +11,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:             Auto Flickr Importer
+ * Requires Plugins:        action-scheduler
  * Plugin URI:              https://wpspecialprojects.wordpress.com
  * Description:
  * Version:                 1.0.0
@@ -36,6 +37,17 @@ define( 'AUTO_FLICKR_IMPORTER_METADATA', get_plugin_data( __FILE__, false, false
 define( 'AUTO_FLICKR_IMPORTER_BASENAME', plugin_basename( __FILE__ ) );
 define( 'AUTO_FLICKR_IMPORTER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AUTO_FLICKR_IMPORTER_URL', plugin_dir_url( __FILE__ ) );
+
+// Get the uploads directory information
+$auto_flickr_importer_uploads_dir = wp_upload_dir();
+
+// Define the path to the uploads directory
+define( 'AUTO_FLICKR_IMPORTER_UPLOADS_PATH', trailingslashit( $auto_flickr_importer_uploads_dir['basedir'] ) . 'auto-flickr-importer/' );
+
+// Optionally create the directory if it doesn't exist
+if ( ! file_exists( AUTO_FLICKR_IMPORTER_UPLOADS_PATH ) ) {
+	wp_mkdir_p( AUTO_FLICKR_IMPORTER_UPLOADS_PATH );
+}
 
 // Load plugin translations so they are available even for the error admin notices.
 add_action(
