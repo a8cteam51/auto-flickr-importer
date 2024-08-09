@@ -19,9 +19,24 @@
 		<properties>
 			<property name="prefixes" type="array">
 				<element value="wpcomsp_"/>
-				<element value="auto_flickr_importer_"/>
+				<element value="auto_flickr_importer"/>
 				<element value="WPCOMSpecialProjects\AutoFlickrImporter"/>
 			</property>
 		</properties>
+	</rule>
+
+	<!-- Allow the use of slashes in hook names. -->
+	<rule ref="WordPress.NamingConventions">
+		<exclude name="WordPress.NamingConventions.ValidHookName.UseUnderscores"/>
+	</rule>
+
+	<!-- Allow the use of short ternary. -->
+	<rule ref="Universal.Operators">
+		<exclude name="Universal.Operators.DisallowShortTernary.Found"/>
+	</rule>
+
+	<!-- Exclude specific rules -->
+	<rule ref="Squiz.Commenting.FunctionComment.MissingParamType">
+		<severity>0</severity>
 	</rule>
 </ruleset>
