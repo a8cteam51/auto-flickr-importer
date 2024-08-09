@@ -100,7 +100,7 @@ class Photo_Stream_Importer {
 			case 'run_initial_import_data':
 				return $this->insert_data_from_flickr( $wp_filesystem, $page );
 			case 'run_initial_import_cleanup':
-				$this->clean_up_files();
+				$this->clean_up_files( $wp_filesystem );
 		}
 
 		return null;
