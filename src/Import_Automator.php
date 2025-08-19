@@ -106,6 +106,8 @@ final class Import_Automator {
 			wpcomsp_auto_flickr_importer_update_raw_setting( 'initial_import_finished', false );
 		}
 
+		wpcomsp_auto_flickr_importer_update_raw_setting( 'initial_import_running', true );
+
 		Initial_Import_Task::register_task();
 	}
 
