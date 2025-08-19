@@ -32,6 +32,7 @@ class BackgroundTasks {
 		add_action( 'auto_flickr_importer/continue_background_task', array( $this, 'continue_background_task' ), 10, 2 );
 		add_action( 'auto_flickr_importer/run_background_task', array( $this, 'run_background_task' ), 10, 3 );
 		add_action( 'auto_flickr_importer/cleanup_background_task', array( $this, 'cleanup_background_task' ), 10, 2 );
+		add_action( 'auto_flickr_importer/cleanup_failed_background_task', array( $this, 'cleanup_failed_background_task' ), 10, 2 );
 
 		add_filter( 'action_scheduler_queue_runner_time_limit', array( $this, 'increase_time_limit' ) );
 	}
@@ -174,8 +175,14 @@ class BackgroundTasks {
 			return;
 		}
 
-		do_action( "auto_flickr_importer/run_background_task/$task_name", $args, $run_id, $task_name );
-		$this->schedule_background_task_action( 'continue', time() + MINUTE_IN_SECONDS, $task_name, $run_id );
+		try {
+			do_action( "auto_flickr_importer/run_background_task/$task_name", $args, $run_id, $task_name );
+			$this->schedule_background_task_action( 'continue', time() + MINUTE_IN_SECONDS, $task_name, $run_id );
+		} catch ( \Throwable $e ) {
+			wpcomsp_auto_flickr_importer_write_log( 'Background task failed: ' . $e->getMessage() );
+			$this->save_background_task_error( $task_name, $run_id, $e );
+			$this->enqueue_background_task_action( 'cleanup_failed', $task_name, $run_id );
+		}
 	}
 
 	/**
@@ -199,6 +206,31 @@ class BackgroundTasks {
 
 		do_action( "auto_flickr_importer/cleanup_background_task/$task_name", $run_id, $task_name );
 		$this->save_previous_completed_background_task_id( $task_name, $run_id );
+
+		// Clear any persisted error for this run on successful cleanup.
+		delete_option( "wpcomsp_bg-task_{$task_name}_run-{$run_id}_error" );
+	}
+
+	/**
+	 * Cleans up a background task that has failed.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @param   string $task_name The name of the task.
+	 * @param   string $run_id    The ID of the task run.
+	 *
+	 * @return  void
+	 */
+	public function cleanup_failed_background_task( string $task_name, string $run_id ): void {
+		$start_args    = $this->get_background_task_start_args( $task_name, $run_id );
+		$latest_run_id = auto_flickr_importer_get_latest_background_task_id( $task_name, $start_args );
+		if ( $latest_run_id !== $run_id ) {
+			wpcomsp_auto_flickr_importer_write_log( 'Background task ' . $task_name . $run_id . ' Skipping old event.' );
+			return;
+		}
+
+		do_action( "auto_flickr_importer/cleanup_failed_background_task/$task_name", $run_id, $task_name );
 	}
 
 	/**
@@ -469,7 +501,7 @@ class BackgroundTasks {
 	 * @return  array
 	 */
 	protected function prepare_background_task_action_data( string $action, string $task_name, ?string $run_id = null, ?array $args = null ): array {
-		if ( ! \in_array( $action, array( 'start', 'run', 'continue', 'cleanup' ), true ) ) {
+		if ( ! \in_array( $action, array( 'start', 'run', 'continue', 'cleanup', 'cleanup_failed' ), true ) ) {
 			throw new \InvalidArgumentException( 'Invalid action.' );
 		}
 		if ( 'start' !== $action && \is_null( $run_id ) ) {
@@ -487,6 +519,31 @@ class BackgroundTasks {
 			),
 			static fn( $value ) => ! \is_null( $value )
 		);
+	}
+
+	/**
+	 * Saves error details for a background task run.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @param   string      $task_name The task name.
+	 * @param   string      $run_id    The run identifier.
+	 * @param   \Throwable $e         The exception thrown.
+	 *
+	 * @return  void
+	 */
+	protected function save_background_task_error( string $task_name, string $run_id, \Throwable $e ): void {
+		$data = array(
+			'message' => $e->getMessage(),
+			'code'    => $e->getCode(),
+			'file'    => $e->getFile(),
+			'line'    => $e->getLine(),
+			'trace'   => method_exists( $e, 'getTraceAsString' ) ? $e->getTraceAsString() : '',
+			'time'    => time(),
+		);
+
+		update_option( "wpcomsp_bg-task_{$task_name}_run-{$run_id}_error", $data, false );
 	}
 
 	// endregion

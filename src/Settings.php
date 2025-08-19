@@ -248,6 +248,7 @@ final class Settings {
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html__( 'Flickr Settings', 'auto-flickr-importer' ); ?></h1>
+			<?php $this->render_last_run_error_notice(); ?>
 			<form method="post" action="options.php">
 				<?php
 				settings_fields( 'wpcomsp_auto_flickr_importer_settings_group' );
@@ -262,5 +263,38 @@ final class Settings {
 			</form>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Renders an admin notice if the latest run of any task has an error.
+	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
+	 *
+	 * @return void
+	 */
+	private function render_last_run_error_notice(): void {
+		$tasks = array( 'initial_import', 'fetch_latest_import', 'fetch_comment_delta_import' );
+		foreach ( $tasks as $task_name ) {
+			$latest_run_id = auto_flickr_importer_get_latest_background_task_id( $task_name );
+			if ( empty( $latest_run_id ) ) {
+				continue;
+			}
+			$error = get_option( "wpcomsp_bg-task_{$task_name}_run-{$latest_run_id}_error", null );
+			if ( empty( $error ) ) {
+				continue;
+			}
+			$message = is_array( $error ) && ! empty( $error['message'] ) ? (string) $error['message'] : __( 'Unknown error', 'auto-flickr-importer' );
+			$time    = is_array( $error ) && ! empty( $error['time'] ) ? (int) $error['time'] : 0;
+			$when    = $time > 0 ? sprintf( /* translators: %s: human time diff */ __( '(%s ago)', 'auto-flickr-importer' ), human_time_diff( $time, time() ) ) : '';
+			printf(
+				'<div class="notice notice-error"><p><strong>%s</strong> %s %s</p></div>',
+				esc_html__( 'Last run failed:', 'auto-flickr-importer' ),
+				esc_html( $message ),
+				esc_html( $when )
+			);
+			// Show just one error notice.
+			break;
+		}
 	}
 }

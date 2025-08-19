@@ -45,6 +45,7 @@ abstract class Abstract_Background_Task {
 		\add_filter( "auto_flickr_importer/background_task_queue/{$this::get_task_name()}", array( $this, 'generate_queue' ), 10, 3 );
 		\add_action( "auto_flickr_importer/run_background_task/{$this::get_task_name()}", array( $this, 'process_chunk' ), 10, 2 );
 		\add_action( "auto_flickr_importer/cleanup_background_task/{$this::get_task_name()}", array( $this, 'cleanup' ) );
+		\add_action( "auto_flickr_importer/cleanup_failed_background_task/{$this::get_task_name()}", array( $this, 'cleanup_failed' ) );
 	}
 
 	// endregion
@@ -92,6 +93,20 @@ abstract class Abstract_Background_Task {
 	 * @return  void
 	 */
 	public function cleanup( string $run_id ): void {
+		// Do nothing by default. Override in child classes.
+	}
+
+	/**
+	 * Cleans up the background task for a failed run.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @param   string $run_id The ID of the current run.
+	 *
+	 * @return  void
+	 */
+	public function cleanup_failed( string $run_id ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		// Do nothing by default. Override in child classes.
 	}
 

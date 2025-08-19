@@ -70,7 +70,7 @@ class Photo_Stream_Importer {
 
 		if ( false === $wp_filesystem ) {
 			wpcomsp_auto_flickr_importer_write_log( 'Can\'t initialize WP_Filesystem. Aborting...' );
-			return null;
+			throw new \RuntimeException( "Can't initialize WP_Filesystem." );
 		}
 
 		$username    = wpcomsp_auto_flickr_importer_get_raw_setting( 'username' );
@@ -78,7 +78,7 @@ class Photo_Stream_Importer {
 
 		if ( empty( $flickr_user ) || empty( $flickr_user->nsid ) ) {
 			wpcomsp_auto_flickr_importer_write_log( 'Can\'t fetch Flickr user data. Aborting...' );
-			return null;
+			throw new \RuntimeException( "Can't fetch Flickr user data for username '{$username}'." );
 		}
 
 		$this->flickr_user_id   = $flickr_user->nsid;
@@ -228,7 +228,7 @@ class Photo_Stream_Importer {
 	 */
 	private function download_media_data( WP_Filesystem_Base $wp_filesystem, int $page ): ?array {
 
-		$extras = array( 'url_o', 'description', 'license', 'date_upload', 'date_taken', 'original_format', 'last_update', 'geo', 'tags', 'machine_tags', 'views', 'media' );
+		$extras = array( 'url_o', 'url_l', 'url_c', 'url_m', 'url_s', 'url_t', 'url_sq', 'description', 'license', 'date_upload', 'date_taken', 'original_format', 'last_update', 'geo', 'tags', 'machine_tags', 'views', 'media' );
 		$extras = implode( ',', $extras );
 
 		$args = array(
@@ -281,7 +281,7 @@ class Photo_Stream_Importer {
 
 			// Download photo/video file.
 			if ( 'photo' === $photo->media ) {
-				$media_url = $photo->url_o;
+				$media_url = $this->get_media_url( $photo );
 			} else { // Video.
 				$media_sizes = wpcomsp_auto_flickr_importer_get_flickr_photo_sizes( $photo->id );
 				if ( ! is_null( $media_sizes ) ) {
@@ -617,5 +617,49 @@ class Photo_Stream_Importer {
 			'page'             => $page,
 			'latest_timestamp' => $this->latest_timestamp,
 		);
+	}
+
+	/**
+	 * Get the media URL for a photo.
+	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
+	 *
+	 * @param object $photo The photo object.
+	 *
+	 * @return string
+	 */
+	private function get_media_url( object $photo ): string {
+		if ( ! empty( $photo->url_o ) ) {
+			return $photo->url_o;
+		}
+
+		if ( ! empty( $photo->url_l ) ) {
+			return $photo->url_l;
+		}
+
+		if ( ! empty( $photo->url_c ) ) {
+			return $photo->url_c;
+		}
+
+		if ( ! empty( $photo->url_m ) ) {
+			return $photo->url_m;
+		}
+
+		if ( ! empty( $photo->url_s ) ) {
+			return $photo->url_s;
+		}
+
+		if ( ! empty( $photo->url_t ) ) {
+			return $photo->url_t;
+		}
+
+		if ( ! empty( $photo->url_sq ) ) {
+			return $photo->url_sq;
+		}
+
+		wpcomsp_auto_flickr_importer_write_log( 'No media URL found for photo: ' . wp_json_encode( $photo ) );
+
+		return '';
 	}
 }

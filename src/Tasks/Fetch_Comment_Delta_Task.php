@@ -66,6 +66,13 @@ class Fetch_Comment_Delta_Task extends Abstract_Background_Task {
 		wpcomsp_auto_flickr_importer_update_raw_setting( 'comment_delta_running', false );
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	#[\Override] public function cleanup_failed( string $run_id ): void {
+		wpcomsp_auto_flickr_importer_update_raw_setting( 'comment_delta_running', false );
+	}
+
 	// endregion
 
 	// region HELPERS

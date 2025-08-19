@@ -14,7 +14,7 @@
  * Requires Plugins:        action-scheduler
  * Plugin URI:              https://wpspecialprojects.wordpress.com
  * Description:             Automatically import photos from Flickr to your WordPress site.
- * Version:                 1.0.0
+ * Version:                 1.0.1
  * Requires at least:       6.5
  * Tested up to:            6.5
  * Requires PHP:            8.2

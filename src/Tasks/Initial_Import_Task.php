@@ -35,7 +35,6 @@ class Initial_Import_Task extends Abstract_Background_Task {
 	#[\Override] public function generate_queue( array $queue, array $start_args, string $run_id ): array {
 
 		wpcomsp_auto_flickr_importer_update_raw_setting( 'latest_import_time', time() );
-		wpcomsp_auto_flickr_importer_update_raw_setting( 'initial_import_running', true );
 
 		$queue[] = array(
 			'action' => 'run_initial_import_photosets',
@@ -70,6 +69,14 @@ class Initial_Import_Task extends Abstract_Background_Task {
 		wpcomsp_auto_flickr_importer_update_raw_setting( 'initial_import_running', false );
 
 		$this->send_import_completed_email();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	#[\Override] public function cleanup_failed( string $run_id ): void {
+		wpcomsp_auto_flickr_importer_update_raw_setting( 'import_running', false );
+		wpcomsp_auto_flickr_importer_update_raw_setting( 'initial_import_running', false );
 	}
 
 	/**
