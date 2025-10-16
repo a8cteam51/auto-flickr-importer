@@ -426,6 +426,12 @@ class Photo_Stream_Importer {
 					$comments = wpcomsp_auto_flickr_importer_get_local_file( $video_folder . '/comments.json' );
 
 					$media_path = glob( $video_folder . '/media.*' );
+
+					// If empty, log and skip.
+					if ( empty( $media_path[0] ) ) {
+						wpcomsp_auto_flickr_importer_write_log( 'No media path found for video ' . $meta['id'] );
+						continue;
+					}
 					$media_path = $media_path[0];
 
 					$categories = array();
