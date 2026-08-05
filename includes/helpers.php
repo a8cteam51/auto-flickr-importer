@@ -284,27 +284,43 @@ function wpcomsp_insert_comment_if_not_exists( string $user_nsid, string $media_
  * @return string|null
  */
 function wpcomsp_auto_flickr_importer_get_remote_file( string $file_url ): ?string {
+	$max_attempts = 5;
 
-	$response = wp_remote_get( $file_url );
+	for ( $attempt = 1; $attempt <= $max_attempts; $attempt++ ) {
+		$response = wp_remote_get( $file_url, array( 'timeout' => 60 ) );
 
-	// Check for errors
-	if ( is_wp_error( $response ) ) {
-		// Handle the error
-		$error_message = $response->get_error_message();
-		wpcomsp_auto_flickr_importer_write_log( 'Unable to fetch the file: ' . $file_url . ' | Error: ' . $error_message );
+		if ( is_wp_error( $response ) ) {
+			wpcomsp_auto_flickr_importer_write_log( 'Unable to fetch the file: ' . $file_url . ' | Error: ' . $response->get_error_message() );
+			return null;
+		}
 
+		$response_code = wp_remote_retrieve_response_code( $response );
+
+		if ( 200 === $response_code ) {
+			$body = wp_remote_retrieve_body( $response );
+
+			if ( empty( $body ) ) {
+				wpcomsp_auto_flickr_importer_write_log( 'The file is empty or could not be read: ' . $file_url );
+				return null;
+			}
+
+			return $body;
+		}
+
+		if ( 429 === $response_code && $attempt < $max_attempts ) {
+			$retry_after = (int) wp_remote_retrieve_header( $response, 'retry-after' );
+			$delay       = max( $retry_after, 2 ** $attempt );
+
+			wpcomsp_auto_flickr_importer_write_log( "Rate limited fetching {$file_url}. Retrying in {$delay}s (attempt {$attempt}/{$max_attempts})." );
+			sleep( $delay );
+			continue;
+		}
+
+		wpcomsp_auto_flickr_importer_write_log( 'Unexpected response code ' . $response_code . ' fetching file: ' . $file_url );
 		return null;
 	}
 
-	// Retrieve the body of the response
-	$body = wp_remote_retrieve_body( $response );
-
-	if ( empty( $body ) ) {
-		wpcomsp_auto_flickr_importer_write_log( 'The file is empty or could not be read: ' . $file_url . ' | Error: ' . wp_json_encode( $response ) );
-		return null;
-	}
-
-	return $body;
+	return null;
 }
 
 /**
