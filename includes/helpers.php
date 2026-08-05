@@ -285,16 +285,13 @@ function wpcomsp_insert_comment_if_not_exists( string $user_nsid, string $media_
  */
 function wpcomsp_auto_flickr_importer_get_remote_file( string $file_url ): ?string {
 	$max_attempts = 5;
+	$reason       = '';
 
 	for ( $attempt = 1; $attempt <= $max_attempts; $attempt++ ) {
 		$response = wp_remote_get( $file_url, array( 'timeout' => 60 ) );
+		$is_error = is_wp_error( $response );
 
-		if ( is_wp_error( $response ) ) {
-			wpcomsp_auto_flickr_importer_write_log( 'Unable to fetch the file: ' . $file_url . ' | Error: ' . $response->get_error_message() );
-			return null;
-		}
-
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code = $is_error ? 0 : wp_remote_retrieve_response_code( $response );
 
 		if ( 200 === $response_code ) {
 			$body = wp_remote_retrieve_body( $response );
@@ -307,18 +304,25 @@ function wpcomsp_auto_flickr_importer_get_remote_file( string $file_url ): ?stri
 			return $body;
 		}
 
-		if ( 429 === $response_code && $attempt < $max_attempts ) {
-			$retry_after = (int) wp_remote_retrieve_header( $response, 'retry-after' );
-			$delay       = max( $retry_after, 2 ** $attempt );
+		$is_retryable = $is_error || 429 === $response_code || $response_code >= 500;
 
-			wpcomsp_auto_flickr_importer_write_log( "Rate limited fetching {$file_url}. Retrying in {$delay}s (attempt {$attempt}/{$max_attempts})." );
-			sleep( $delay );
-			continue;
+		if ( ! $is_retryable ) {
+			wpcomsp_auto_flickr_importer_write_log( 'Unexpected response code ' . $response_code . ' fetching file: ' . $file_url );
+			return null;
 		}
 
-		wpcomsp_auto_flickr_importer_write_log( 'Unexpected response code ' . $response_code . ' fetching file: ' . $file_url );
-		return null;
+		$reason = $is_error ? $response->get_error_message() : "response code {$response_code}";
+
+		if ( $attempt < $max_attempts ) {
+			$retry_after = $is_error ? 0 : (int) wp_remote_retrieve_header( $response, 'retry-after' );
+			$delay       = min( max( $retry_after, 2 ** $attempt ), 60 );
+
+			wpcomsp_auto_flickr_importer_write_log( "Transient failure fetching {$file_url} ({$reason}). Retrying in {$delay}s (attempt {$attempt}/{$max_attempts})." );
+			sleep( $delay );
+		}
 	}
+
+	wpcomsp_auto_flickr_importer_write_log( "Giving up fetching {$file_url} after {$max_attempts} attempts ({$reason})." );
 
 	return null;
 }
